@@ -1,51 +1,50 @@
 #include "main.h"
-
 /**
- * _printf - formatted output conversion and print data.
- * @format: input string.
- *
- * Return: number of chars printed.
+ * _printf - Printf function copy
+ * Description: This is a modified version of printf
+ * @format: String to print
+ * Return: Number of characters printed
  */
 int _printf(const char *format, ...)
 {
-	unsigned int i = 0, len = 0, ibuf = 0;
-	va_list arguments;
+	int how_many = 0;
+	const char *pf;
+	int (*f)();
+	char *buffer = buffer_init();
+	va_list args;
 
-	int (*function)(va_list, char *, unsigned int);
-	char *buffer;
-	va_start(arguments, format), buffer = malloc(sizeof(char) * 1024);
-	if (!format || !buffer || (format[i] == '%' && !format[i + 1]))
-		return (-1);
-	if (!format[i])
+	va_start(args, format);
+	if (!buffer)
 		return (0);
-	for (i = 0; format && format[i]; i++)
+	if (!format || (format[0] == '%' && format[1] == '\0'))
 	{
-		if (format[i] == '%')
+		free(buffer);
+		return (-1);
+	}
+	for (pf = format; *pf; pf++)
+	{
+		if (*pf == '%')
 		{
-			if (format[i + 1] == '\0')
-			{	print_buf(buffer, ibuf), free(buffer), va_end(arguments);
-				return (-1);
+			f = verify_format(pf);
+			if (f)
+			{
+				how_many += f(args, buffer);
+				pf++;
 			}
 			else
-			{	function = get_print_func(format, i + 1);
-				if (function == NULL)
-				{
-					if (format[i + 1] == ' ' && !format[i + 2])
-						return (-1);
-					handl_buf(buffer, format[i], ibuf), len++, i--;
-				}
-				else
-				{
-					len += function(arguments, buffer, ibuf);
-					i += ev_print_func(format, i + 1);
-				}
-			} i++;
+			{
+				_putchar(buffer, *pf);
+				how_many++;
+			}
 		}
 		else
-			handl_buf(buffer, format[i], ibuf), len++;
-		for (ibuf = len; ibuf > 1024; ibuf -= 1024)
-			;
+		{
+			_putchar(buffer, *pf);
+			how_many++;
+		}
 	}
-	print_buf(buffer, ibuf), free(buffer), va_end(arguments);
-	return (len);
+	va_end(args);
+	buffer_print(buffer, buffer_pos(buffer));
+	free(buffer);
+	return (how_many);
 }
