@@ -2,7 +2,7 @@ printf
 <<<<<<< HEAD
 0x11. C - printf
 Team: Danisile Jiyane Zandile Tshabalala
-============
+===========================
 
 0x11. C - printf
 
